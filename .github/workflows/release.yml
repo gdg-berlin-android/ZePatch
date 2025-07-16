@@ -1,0 +1,49 @@
+name: Android Build and Publish
+
+permissions:
+  contents: write
+
+on:
+  push:
+    tags:
+      - 'v*' # Trigger on new tags (e.g., v1.0.0)
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Update ubuntu
+        run: sudo apt-get update
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Assemble Debug APK
+        run: ./gradlew assembleDebug
+
+      - name: Create GitHub release
+        id: create_release
+        uses: comnoco/create-release-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ inputs.tag || github.ref }}
+          release_name: Release ${{ github.ref_name }}
+
+      - name: Upload Release APK
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: app/build/outputs/apk/debug/app-debug.apk
+          asset_name: zepatch-${{ github.ref_name }}.apk
+          asset_content_type: application/vnd.android.package-archive
+
