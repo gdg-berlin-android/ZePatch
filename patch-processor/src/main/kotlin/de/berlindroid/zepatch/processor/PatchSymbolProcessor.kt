@@ -2,7 +2,6 @@ package de.berlindroid.zepatch.processor
 
 import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.getAnnotationsByType
-import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
@@ -61,18 +60,33 @@ class PatchSymbolProcessor(val environment: SymbolProcessorEnvironment) : Symbol
         val objectName = "PatchRegistry"
         val composableAnnotation = ClassName("androidx.compose.runtime", "Composable")
 
+        val imageBitmapClass = ClassName("androidx.compose.ui.graphics", "ImageBitmap")
+        val onBitmapLambda = LambdaTypeName.get(
+            returnType = Unit::class.asTypeName(),
+            parameters = arrayOf(imageBitmapClass)
+        )
+        val patchableLambda = LambdaTypeName.get(
+            returnType = Unit::class.asTypeName(),
+            parameters = arrayOf(Boolean::class.asTypeName(), onBitmapLambda)
+        ).copy(
+            annotations = listOf(AnnotationSpec.builder(composableAnnotation).build())
+        )
+
         val mapType = com.squareup.kotlinpoet.MAP.parameterizedBy(
             String::class.asTypeName(),
-            LambdaTypeName.get(returnType = Unit::class.asTypeName()).copy(
-                annotations = listOf(AnnotationSpec.builder(composableAnnotation).build())
-            )
+            patchableLambda
         )
 
         val mapInitializer = CodeBlock.builder().apply {
             add("mapOf(\n")
             entries.forEachIndexed { idx, e ->
                 val sep = if (idx < entries.size - 1) "," else ""
-                add("    %S to { %L() }%L\n", e.key, e.fqFunctionCall, sep)
+                add(
+                    "    %S to { shouldCapture, onBitmap -> %L(shouldCapture = shouldCapture, onBitmap = onBitmap) }%L\n",
+                    e.key,
+                    e.fqFunctionCall,
+                    sep
+                )
             }
             add(")")
         }.build()

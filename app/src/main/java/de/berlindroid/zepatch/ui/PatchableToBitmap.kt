@@ -13,7 +13,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
-import de.berlindroid.zepatch.utils.CaptureToBitmap
 
 /**
  * Renders the provided [patchable] into a Bitmap-like [ImageBitmap] and displays it via [Image].
@@ -23,7 +22,7 @@ import de.berlindroid.zepatch.utils.CaptureToBitmap
 fun PatchableToBitmap(
     modifier: Modifier = Modifier,
     onBitmap: (ImageBitmap) -> Unit = {},
-    patchable: @Composable () -> Unit,
+    patchable: @Composable (Boolean, (ImageBitmap) -> Unit) -> Unit,
 ) {
     var image by remember { mutableStateOf<ImageBitmap?>(null) }
     var shouldCapture by remember { mutableStateOf(false) }
@@ -33,16 +32,12 @@ fun PatchableToBitmap(
             image = null
             shouldCapture = true
         }) { Text("Do it") }
-        // Compose the content through the composable utility; it will invoke the callback when ready.
-        CaptureToBitmap(
-            modifier = Modifier.fillMaxWidth(),
-            shouldCapture = shouldCapture,
-            onBitmap = { img ->
-                image = img
-                shouldCapture = false
-            },
-            content = patchable
-        )
+
+        // Render the patchable; it will capture via SafeArea when shouldCapture is true
+        patchable(shouldCapture) { img ->
+            image = img
+            shouldCapture = false
+        }
 
         image?.let {
             Image(
@@ -52,7 +47,6 @@ fun PatchableToBitmap(
             )
             onBitmap(it)
         } ?: CircularProgressIndicator()
-
     }
 }
 

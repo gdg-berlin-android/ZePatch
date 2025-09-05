@@ -195,7 +195,7 @@ private fun PatchableDetail(
     modifier: Modifier = Modifier,
     name: String,
     onBackClick: () -> Unit,
-    patchable: @Composable () -> Unit,
+    patchable: @Composable (Boolean, (ImageBitmap) -> Unit) -> Unit,
 ) {
     var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
     var reducedImageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
@@ -245,12 +245,24 @@ private fun PatchableDetail(
                 name,
                 onBitmapUpdated = { imageBitmap = it },
                 onColorCountUpdated = { colorCount = it },
-                onReducedUpdated = { img, histo -> reducedImageBitmap = img;reducedHistogram = histo },
-                onEmbroideryUpdated = { data, preview -> embroideryData = data; embroideryPreviewImage = preview },
+                onReducedUpdated = { img, histo ->
+                    reducedImageBitmap = img;reducedHistogram = histo
+                },
+                onEmbroideryUpdated = { data, preview ->
+                    embroideryData = data
+                    embroideryPreviewImage = preview
+                },
                 patchable
             )
 
-            WizardButtons(currentMode, imageBitmap, reducedImageBitmap, embroideryData, name, launcher) {
+            WizardButtons(
+                currentMode,
+                imageBitmap,
+                reducedImageBitmap,
+                embroideryData,
+                name,
+                launcher
+            ) {
                 currentMode = it
             }
         }
@@ -269,7 +281,7 @@ private fun WizardContent(
     onColorCountUpdated: (Int) -> Unit,
     onReducedUpdated: (ImageBitmap, Histogram) -> Unit,
     onEmbroideryUpdated: (ByteArray, ImageBitmap) -> Unit,
-    patchable: @Composable (() -> Unit),
+    patchable: @Composable (Boolean, (ImageBitmap) -> Unit) -> Unit,
 ) {
     Card(
         modifier = Modifier

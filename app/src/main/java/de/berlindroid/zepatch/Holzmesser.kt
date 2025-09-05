@@ -10,4 +10,5 @@ import de.berlindroid.zepatch.generated.PatchRegistry
  */
 
 // Generated via @Patch + KSP
+
 val patchables = PatchRegistry.patchables

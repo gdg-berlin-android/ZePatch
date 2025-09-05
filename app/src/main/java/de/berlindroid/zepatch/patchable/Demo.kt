@@ -5,16 +5,21 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -29,12 +34,17 @@ import de.berlindroid.zepatch.R
 import de.berlindroid.zepatch.annotations.Patch
 import de.berlindroid.zepatch.ui.SafeArea
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Patch("AppLogo")
 @Composable
-fun AppLogo() {
-    SafeArea {
+fun AppLogo(
+    shouldCapture: Boolean = false,
+    onBitmap: (ImageBitmap) -> Unit = {},
+) {
+    SafeArea(
+        shouldCapture = shouldCapture,
+        onBitmap = onBitmap,
+    ) {
         Image(
             modifier = Modifier.size(200.dp),
             painter = painterResource(R.drawable.ai_logo),
@@ -47,8 +57,14 @@ fun AppLogo() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Patch("BerlindroidLogo")
 @Composable
-fun BerlindroidLogo() {
-    SafeArea {
+fun BerlindroidLogo(
+    shouldCapture: Boolean = false,
+    onBitmap: (ImageBitmap) -> Unit = {},
+) {
+    SafeArea(
+        shouldCapture = shouldCapture,
+        onBitmap = onBitmap,
+    ) {
         Image(
             modifier = Modifier.size(200.dp),
             painter = painterResource(R.drawable.voltron_nosign),
@@ -61,8 +77,14 @@ fun BerlindroidLogo() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Patch("GoogleLogo")
 @Composable
-fun GoogleLogo() {
-    SafeArea {
+fun GoogleLogo(
+    shouldCapture: Boolean = false,
+    onBitmap: (ImageBitmap) -> Unit = {},
+) {
+    SafeArea(
+        shouldCapture = shouldCapture,
+        onBitmap = onBitmap,
+    ) {
         Image(
             modifier = Modifier.size(200.dp),
             painter = painterResource(R.drawable.g),
@@ -75,8 +97,14 @@ fun GoogleLogo() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Patch("Android")
 @Composable
-fun AndroidLogo() {
-    SafeArea {
+fun AndroidLogo(
+    shouldCapture: Boolean = false,
+    onBitmap: (ImageBitmap) -> Unit = {},
+) {
+    SafeArea(
+        shouldCapture = shouldCapture,
+        onBitmap = onBitmap,
+    ) {
         Image(
             modifier = Modifier.size(200.dp),
             painter = painterResource(R.drawable.andriod),
@@ -88,69 +116,85 @@ fun AndroidLogo() {
 
 @Patch("AndyA")
 @Composable
-fun AndyA() {
-    SafeArea(
-        modifier = Modifier
-            .size(200.dp)
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        Color.Red,
-                        Color.Yellow,
-                        Color.Green,
-                        Color.Blue,
-                        Color.Cyan
-                    )
-                ),
-                shape = RoundedCornerShape(
-                    topStartPercent = 50,
-                    topEndPercent = 50,
-                    bottomStartPercent = 50,
-                    bottomEndPercent = 0
+fun AndyA(
+    shouldCapture: Boolean = false,
+    onBitmap: (ImageBitmap) -> Unit = {},
+) {
+    var name by remember { mutableStateOf("Andy") }
+    Column {
+        SafeArea(
+            shouldCapture = shouldCapture,
+            onBitmap = onBitmap,
+        ) {
+            Column(
+                modifier = Modifier
+                    .size(200.dp)
+                    .background(
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                Color.Red,
+                                Color.Yellow,
+                                Color.Green,
+                                Color.Blue,
+                                Color.Cyan
+                            )
+                        ),
+                        shape = RoundedCornerShape(
+                            topStartPercent = 50,
+                            topEndPercent = 50,
+                            bottomStartPercent = 50,
+                            bottomEndPercent = 0
+                        )
+                    ),
+            ) {
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    fontFamily = FontFamily.Cursive,
+                    textAlign = TextAlign.Center,
+                    fontStyle = FontStyle.Italic,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 70.sp,
+                    text = name,
                 )
-            ),
-    ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Spacer(modifier = Modifier.weight(1f))
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                fontFamily = FontFamily.Cursive,
-                textAlign = TextAlign.Center,
-                fontStyle = FontStyle.Italic,
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 70.sp,
-                text = "Andy",
-            )
-            Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.weight(1f))
+            }
         }
+        TextField(value = name, onValueChange = { name = it })
     }
 }
 
 @Patch("AndyB")
 @Composable
-fun AndyB() {
+fun AndyB(
+    shouldCapture: Boolean = false,
+    onBitmap: (ImageBitmap) -> Unit = {},
+) {
     SafeArea(
-        modifier = Modifier
-            .size(200.dp)
-            .background(
-                color = Color.White,
-                shape = RoundedCornerShape(
-                    topStartPercent = 0,
-                    topEndPercent = 50,
-                    bottomStartPercent = 50,
-                    bottomEndPercent = 50
-                )
-            )
-            .border(
-                12.dp, Color.Black, RoundedCornerShape(
-                    topStartPercent = 0,
-                    topEndPercent = 50,
-                    bottomStartPercent = 50,
-                    bottomEndPercent = 50
-                )
-            ),
+        shouldCapture = shouldCapture,
+        onBitmap = onBitmap,
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .size(200.dp)
+                .background(
+                    color = Color.White,
+                    shape = RoundedCornerShape(
+                        topStartPercent = 0,
+                        topEndPercent = 50,
+                        bottomStartPercent = 50,
+                        bottomEndPercent = 50
+                    )
+                )
+                .border(
+                    12.dp, Color.Black, RoundedCornerShape(
+                        topStartPercent = 0,
+                        topEndPercent = 50,
+                        bottomStartPercent = 50,
+                        bottomEndPercent = 50
+                    )
+                ),
+        ) {
             Spacer(modifier = Modifier.weight(1f))
             Text(
                 modifier = Modifier.fillMaxWidth(),
@@ -161,7 +205,7 @@ fun AndyB() {
                 style = TextStyle.Default.copy(shadow = Shadow(blurRadius = 12f)),
                 color = Color.Black,
                 text = "Andy",
-                letterSpacing = -1.sp
+                letterSpacing = (-1).sp
             )
             Spacer(modifier = Modifier.weight(1f))
         }
@@ -170,16 +214,28 @@ fun AndyB() {
 
 @Patch("flex")
 @Composable
-fun Emoji() {
-    SafeArea {
+fun Emoji(
+    shouldCapture: Boolean = false,
+    onBitmap: (ImageBitmap) -> Unit = {},
+) {
+    SafeArea(
+        shouldCapture = shouldCapture,
+        onBitmap = onBitmap,
+    ) {
         Text("💪", fontSize = 48.sp)
     }
 }
 
 @Patch("ROBOT")
 @Composable
-fun Emoji2() {
-    SafeArea {
+fun Emoji2(
+    shouldCapture: Boolean = false,
+    onBitmap: (ImageBitmap) -> Unit = {},
+) {
+    SafeArea(
+        shouldCapture = shouldCapture,
+        onBitmap = onBitmap,
+    ) {
         Text("🦾🤖\nHereWeGo", fontSize = 34.sp)
     }
 }
@@ -187,5 +243,5 @@ fun Emoji2() {
 @Preview
 @Composable
 fun PreviewDemo() {
-    AndyB()
+    AndyA()
 }
