@@ -244,8 +244,7 @@ private fun PatchableDetail(
                 onBitmapUpdated = viewModel::updateBitmap,
                 onColorCountUpdated = viewModel::updateColorCount,
                 computeReducedBitmap = viewModel::computeReducedBitmap,
-                onEmbroideryUpdated = viewModel::updateEmbroidery,
-                patchable
+                patchable = patchable
             )
 
             WizardButtons(
@@ -276,7 +275,6 @@ private fun WizardContent(
     onBitmapUpdated: (ImageBitmap) -> Unit,
     onColorCountUpdated: (Int) -> Unit,
     computeReducedBitmap: () -> Unit,
-    onEmbroideryUpdated: (ByteArray, ImageBitmap) -> Unit,
     patchable: @Composable (Boolean, (ImageBitmap) -> Unit) -> Unit,
 ) {
     Card(
@@ -302,11 +300,15 @@ private fun WizardContent(
             )
 
             STITCHES -> reducedImageBitmap?.multiLet(reducedHistogram) { img, histo ->
+                val vm: WizardViewModel = lifecycleViewModel()
+                val ui by vm.uiState.collectAsStateWithLifecycle()
                 BitmapToStitches(
                     reducedImageBitmap = img,
                     reducedHistogram = histo,
                     name = name,
-                    onEmbroidery = onEmbroideryUpdated
+                    onCreateEmbroidery = { n, b, h -> vm.createEmbroidery(n, b, h) },
+                    previewImage = ui.embroideryPreviewImage,
+                    creatingEmbroidery = ui.creatingEmbroidery,
                 )
             }
         }
