@@ -1,12 +1,12 @@
 package de.berlindroid.zepatch
 
 import android.graphics.Bitmap
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.graphics.scale
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.embroidermodder.punching.Histogram
 import com.embroidermodder.punching.reduceColors
 import de.berlindroid.zepatch.PatchablePreviewMode.COMPOSABLE
@@ -83,10 +83,4 @@ class WizardViewModel : ViewModel() {
         )
     }
 
-    fun setReducedResult(image: ImageBitmap, histogram: Histogram) {
-        _uiState.value = _uiState.value.copy(
-            reducedImageBitmap = image,
-            reducedHistogram = histogram,
-        )
-    }
 }
