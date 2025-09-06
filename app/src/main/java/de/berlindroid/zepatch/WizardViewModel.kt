@@ -1,15 +1,18 @@
 package de.berlindroid.zepatch
 
+import android.app.Application
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.graphics.scale
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.embroidermodder.punching.Histogram
 import com.embroidermodder.punching.reduceColors
 import de.berlindroid.zepatch.PatchablePreviewMode.COMPOSABLE
+import de.berlindroid.zepatch.stiches.StitchToPES
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +22,8 @@ import kotlinx.coroutines.launch
 /**
  * ViewModel to manage the Wizard screen state.
  */
-class WizardViewModel : ViewModel() {
+
+class WizardViewModel(application: Application) : AndroidViewModel(application) {
 
     data class UIState(
         val imageBitmap: ImageBitmap? = null,
@@ -28,6 +32,8 @@ class WizardViewModel : ViewModel() {
         val colorCount: Int = 3,
         val embroideryData: ByteArray? = null,
         val embroideryPreviewImage: ImageBitmap? = null,
+        val creatingEmbroidery: Boolean = false,
+        val error: String? = null,
         val previewMode: PatchablePreviewMode = COMPOSABLE,
     )
 
@@ -76,11 +82,49 @@ class WizardViewModel : ViewModel() {
         }
     }
 
-    fun updateEmbroidery(data: ByteArray, preview: ImageBitmap) {
-        _uiState.value = _uiState.value.copy(
-            embroideryData = data,
-            embroideryPreviewImage = preview,
-        )
+    fun createEmbroidery(
+        name: String,
+        bitmap: ImageBitmap,
+        histogram: Histogram,
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _uiState.value = _uiState.value.copy(creatingEmbroidery = true, error = null)
+
+                val aspect = bitmap.width / bitmap.height.toFloat()
+                val embroidery = StitchToPES.createEmbroideryFromBitmap(
+                    name = name,
+                    bitmap = bitmap.asAndroidBitmap(),
+                    histogram = histogram,
+                    mmWidth = 500f * aspect,
+                    mmHeight = 500f,
+                    mmDensityX = 4f,
+                    mmDensityY = 2f,
+                )
+
+                val context = getApplication<Application>().applicationContext
+                val pes = StitchToPES.convert(context, embroidery)
+                val png = StitchToPES.convert(context, embroidery, "png")
+
+                val previewImage = if (png == null || png.isEmpty()) {
+                    null
+                } else {
+                    val decoded = BitmapFactory.decodeByteArray(png, 0, png.size)
+                    decoded.scale(decoded.width * 2, decoded.height * 2).asImageBitmap()
+                }
+
+                _uiState.value = _uiState.value.copy(
+                    embroideryData = pes,
+                    embroideryPreviewImage = previewImage,
+                    creatingEmbroidery = false,
+                )
+            } catch (t: Throwable) {
+                _uiState.value = _uiState.value.copy(
+                    creatingEmbroidery = false,
+                    error = t.message ?: t.toString(),
+                )
+            }
+        }
     }
 
 }
