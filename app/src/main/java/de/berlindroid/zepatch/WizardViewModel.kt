@@ -34,6 +34,11 @@ class WizardViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(UIState())
     val uiState: StateFlow<UIState> = _uiState.asStateFlow()
 
+    /** Resets the whole wizard state back to initial defaults. */
+    fun reset() {
+        _uiState.value = UIState()
+    }
+
     fun setPreviewMode(mode: PatchablePreviewMode) {
         _uiState.value = _uiState.value.copy(previewMode = mode)
     }
