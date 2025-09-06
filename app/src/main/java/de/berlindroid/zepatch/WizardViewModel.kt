@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
@@ -42,26 +43,28 @@ class WizardViewModel(application: Application) : AndroidViewModel(application) 
 
     /** Resets the whole wizard state back to initial defaults. */
     fun reset() {
-        _uiState.value = UIState()
+        _uiState.update { UIState() }
     }
 
     fun setPreviewMode(mode: PatchablePreviewMode) {
-        _uiState.value = _uiState.value.copy(previewMode = mode)
+        _uiState.update { it.copy(previewMode = mode) }
     }
 
     fun updateColorCount(count: Int) {
-        _uiState.value = _uiState.value.copy(colorCount = count)
+        _uiState.update { it.copy(colorCount = count) }
     }
 
     fun updateBitmap(bitmap: ImageBitmap) {
-        _uiState.value = _uiState.value.copy(
-            imageBitmap = bitmap,
-            // Reset downstream results when source bitmap changes
-            reducedImageBitmap = null,
-            reducedHistogram = null,
-            embroideryData = null,
-            embroideryPreviewImage = null,
-        )
+        _uiState.update {
+            it.copy(
+                imageBitmap = bitmap,
+                // Reset downstream results when source bitmap changes
+                reducedImageBitmap = null,
+                reducedHistogram = null,
+                embroideryData = null,
+                embroideryPreviewImage = null,
+            )
+        }
     }
 
     fun computeReducedBitmap() {
@@ -75,10 +78,12 @@ class WizardViewModel(application: Application) : AndroidViewModel(application) 
                 .scale((512 * aspect).toInt(), 512, false)
                 .reduceColors(colorCount)
 
-            _uiState.value = _uiState.value.copy(
-                reducedImageBitmap = reducedBmp.asImageBitmap(),
-                reducedHistogram = histogram,
-            )
+            _uiState.update {
+                it.copy(
+                    reducedImageBitmap = reducedBmp.asImageBitmap(),
+                    reducedHistogram = histogram,
+                )
+            }
         }
     }
 
@@ -89,7 +94,7 @@ class WizardViewModel(application: Application) : AndroidViewModel(application) 
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                _uiState.value = _uiState.value.copy(creatingEmbroidery = true, error = null)
+                _uiState.update { it.copy(creatingEmbroidery = true, error = null) }
 
                 val aspect = bitmap.width / bitmap.height.toFloat()
                 val embroidery = StitchToPES.createEmbroideryFromBitmap(
@@ -113,16 +118,20 @@ class WizardViewModel(application: Application) : AndroidViewModel(application) 
                     decoded.scale(decoded.width * 2, decoded.height * 2).asImageBitmap()
                 }
 
-                _uiState.value = _uiState.value.copy(
-                    embroideryData = pes,
-                    embroideryPreviewImage = previewImage,
-                    creatingEmbroidery = false,
-                )
+                _uiState.update {
+                    it.copy(
+                        embroideryData = pes,
+                        embroideryPreviewImage = previewImage,
+                        creatingEmbroidery = false,
+                    )
+                }
             } catch (t: Throwable) {
-                _uiState.value = _uiState.value.copy(
-                    creatingEmbroidery = false,
-                    error = t.message ?: t.toString(),
-                )
+                _uiState.update {
+                    it.copy(
+                        creatingEmbroidery = false,
+                        error = t.message ?: t.toString(),
+                    )
+                }
             }
         }
     }
