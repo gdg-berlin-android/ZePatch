@@ -74,7 +74,6 @@ import de.berlindroid.zepatch.utils.uppercaseWords
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel as lifecycleViewModel
 
-
 enum class PatchablePreviewMode {
     COMPOSABLE, BITMAP, REDUCED_BITMAP, STITCHES
 }
@@ -239,7 +238,6 @@ private fun PatchableDetail(
                 onBitmapUpdated = viewModel::updateBitmap,
                 onColorCountUpdated = viewModel::updateColorCount,
                 computeReducedBitmap = viewModel::computeReducedBitmap,
-                onReducedUpdated = viewModel::setReducedResult,
                 onEmbroideryUpdated = viewModel::updateEmbroidery,
                 patchable
             )
@@ -253,7 +251,7 @@ private fun PatchableDetail(
                 launcher
             ) {
                 viewModel.setPreviewMode(it)
-                if (it == PatchablePreviewMode.REDUCED_BITMAP) {
+                if (it == REDUCED_BITMAP) {
                     viewModel.computeReducedBitmap()
                 }
             }
@@ -272,7 +270,6 @@ private fun WizardContent(
     onBitmapUpdated: (ImageBitmap) -> Unit,
     onColorCountUpdated: (Int) -> Unit,
     computeReducedBitmap: () -> Unit,
-    onReducedUpdated: (ImageBitmap, Histogram) -> Unit,
     onEmbroideryUpdated: (ByteArray, ImageBitmap) -> Unit,
     patchable: @Composable (Boolean, (ImageBitmap) -> Unit) -> Unit,
 ) {
