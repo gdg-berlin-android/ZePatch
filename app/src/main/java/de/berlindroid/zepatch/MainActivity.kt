@@ -51,6 +51,7 @@ import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneSca
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -198,6 +199,11 @@ private fun PatchableDetail(
 
     val viewModel: WizardViewModel = lifecycleViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // Reset wizard state when a different patchable is opened
+    LaunchedEffect(name) {
+        viewModel.reset()
+    }
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
