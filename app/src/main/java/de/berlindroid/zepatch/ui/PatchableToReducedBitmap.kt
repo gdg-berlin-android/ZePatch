@@ -35,14 +35,10 @@ fun PatchableToReducedBitmap(
     modifier: Modifier = Modifier,
     image: ImageBitmap? = null,
     colorCount: Int = 3,
-    onReduced: (ImageBitmap, Histogram) -> Unit = { _, _ -> },
+    reducedImage: ImageBitmap? = null,
+    computeReducedBitmap: () -> Unit = {},
     onColorCountChanged: (Int) -> Unit = {}
 ) {
-
-    var reducedImage by remember { mutableStateOf<ImageBitmap?>(null) }
-    var reducedHistogram by remember { mutableStateOf<Histogram?>(null) }
-    val coroutineScope = rememberCoroutineScope()
-
     Column(modifier = modifier.fillMaxWidth()) {
         image?.let {
             Image(
@@ -51,22 +47,7 @@ fun PatchableToReducedBitmap(
                 modifier = Modifier.fillMaxWidth()
             )
         }
-        Button(onClick = {
-            // TODO: VMIZE
-            coroutineScope.launch(Dispatchers.IO) {
-                reducedImage = null
-                image?.let {
-                    val aspect = it.width / it.height.toFloat()
-                    val (bitmap, histogram) = it.asAndroidBitmap()
-                        .copy(Bitmap.Config.ARGB_8888, false)
-                        .scale((512 * aspect).toInt(), 512, false)
-                        .reduceColors(colorCount)
-
-                    reducedImage = bitmap.asImageBitmap()
-                    reducedHistogram = histogram
-                }
-            }
-        }) { Text("Do it") }
+        Button(onClick = computeReducedBitmap) { Text("Do it") }
 
         TextField(
             value = "$colorCount",
@@ -84,13 +65,12 @@ fun PatchableToReducedBitmap(
             )
         )
 
-        reducedImage?.multiLet(reducedHistogram) { image, histogram ->
+        reducedImage?.let {
             Image(
-                bitmap = image,
+                bitmap = it,
                 contentDescription = "patch bitmap",
                 modifier = Modifier.fillMaxWidth()
             )
-            onReduced(image, histogram)
         } ?: CircularProgressIndicator()
     }
 }
@@ -101,7 +81,6 @@ fun PatchableToReducedBitmapPreview() {
     PatchableToReducedBitmap(
         image = ImageBitmap(width = 100, height = 100), // Example ImageBitmap
         colorCount = 5,
-        onReduced = { _, _ -> },
         onColorCountChanged = {}
     )
 }

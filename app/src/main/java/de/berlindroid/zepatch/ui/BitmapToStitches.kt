@@ -29,7 +29,6 @@ import de.berlindroid.zepatch.utils.multiLet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun BitmapToStitches(
     modifier: Modifier = Modifier,
@@ -99,7 +98,8 @@ fun BitmapToStitches(
 @Preview
 @Composable
 fun BitmapToStitchesPreview() {
-    val imageBitmap = ImageBitmap(width = 100, height = 100) // Replace with a real ImageBitmap if needed
+    val imageBitmap =
+        ImageBitmap(width = 100, height = 100) // Replace with a real ImageBitmap if needed
     val histogram = imageBitmap.asAndroidBitmap().colorHistogram()
     BitmapToStitches(
         reducedImageBitmap = imageBitmap,
