@@ -51,17 +51,15 @@ import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneSca
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.embroidermodder.punching.Histogram
 import de.berlindroid.zepatch.PatchablePreviewMode.BITMAP
 import de.berlindroid.zepatch.PatchablePreviewMode.COMPOSABLE
@@ -75,9 +73,9 @@ import de.berlindroid.zepatch.ui.theme.ZePatchTheme
 import de.berlindroid.zepatch.utils.multiLet
 import de.berlindroid.zepatch.utils.uppercaseWords
 import kotlinx.coroutines.launch
+import androidx.lifecycle.viewmodel.compose.viewModel as lifecycleViewModel
 
-
-private enum class PatchablePreviewMode {
+enum class PatchablePreviewMode {
     COMPOSABLE, BITMAP, REDUCED_BITMAP, STITCHES
 }
 
@@ -197,18 +195,20 @@ private fun PatchableDetail(
     onBackClick: () -> Unit,
     patchable: @Composable (Boolean, (ImageBitmap) -> Unit) -> Unit,
 ) {
-    var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
-    var reducedImageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
-    var reducedHistogram by remember { mutableStateOf<Histogram?>(null) }
-    var colorCount by remember { mutableIntStateOf(3) }
-    var embroideryData by remember { mutableStateOf<ByteArray?>(null) }
-    var embroideryPreviewImage by remember { mutableStateOf<ImageBitmap?>(null) }
-
     val context = LocalContext.current
+
+    val viewModel: WizardViewModel = lifecycleViewModel()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // Reset wizard state when a different patchable is opened
+    LaunchedEffect(name) {
+        viewModel.reset()
+    }
+
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        savePesAfterSelection(context, result, embroideryData)
+        savePesAfterSelection(context, result, uiState.embroideryData)
     }
 
     Scaffold(
@@ -232,38 +232,33 @@ private fun PatchableDetail(
         Column(
             modifier = Modifier.padding(innerPadding),
         ) {
-            var currentMode by remember { mutableStateOf(COMPOSABLE) }
-
-            ProgressPills(imageBitmap, reducedImageBitmap, currentMode)
+            ProgressPills(uiState.imageBitmap, uiState.reducedImageBitmap, uiState.previewMode)
 
             WizardContent(
-                currentMode,
-                imageBitmap,
-                colorCount,
-                reducedImageBitmap,
-                reducedHistogram,
+                uiState.previewMode,
+                uiState.imageBitmap,
+                uiState.colorCount,
+                uiState.reducedImageBitmap,
+                uiState.reducedHistogram,
                 name,
-                onBitmapUpdated = { imageBitmap = it },
-                onColorCountUpdated = { colorCount = it },
-                onReducedUpdated = { img, histo ->
-                    reducedImageBitmap = img;reducedHistogram = histo
-                },
-                onEmbroideryUpdated = { data, preview ->
-                    embroideryData = data
-                    embroideryPreviewImage = preview
-                },
-                patchable
+                onBitmapUpdated = viewModel::updateBitmap,
+                onColorCountUpdated = viewModel::updateColorCount,
+                computeReducedBitmap = viewModel::computeReducedBitmap,
+                patchable = patchable
             )
 
             WizardButtons(
-                currentMode,
-                imageBitmap,
-                reducedImageBitmap,
-                embroideryData,
+                uiState.previewMode,
+                uiState.imageBitmap,
+                uiState.reducedImageBitmap,
+                uiState.embroideryData,
                 name,
                 launcher
             ) {
-                currentMode = it
+                viewModel.setPreviewMode(it)
+                if (it == REDUCED_BITMAP) {
+                    viewModel.computeReducedBitmap()
+                }
             }
         }
     }
@@ -279,8 +274,7 @@ private fun WizardContent(
     name: String,
     onBitmapUpdated: (ImageBitmap) -> Unit,
     onColorCountUpdated: (Int) -> Unit,
-    onReducedUpdated: (ImageBitmap, Histogram) -> Unit,
-    onEmbroideryUpdated: (ByteArray, ImageBitmap) -> Unit,
+    computeReducedBitmap: () -> Unit,
     patchable: @Composable (Boolean, (ImageBitmap) -> Unit) -> Unit,
 ) {
     Card(
@@ -301,15 +295,20 @@ private fun WizardContent(
                 image = imageBitmap,
                 colorCount = colorCount,
                 onColorCountChanged = onColorCountUpdated,
-                onReduced = onReducedUpdated,
+                computeReducedBitmap = computeReducedBitmap,
+                reducedImage = reducedImageBitmap,
             )
 
             STITCHES -> reducedImageBitmap?.multiLet(reducedHistogram) { img, histo ->
+                val vm: WizardViewModel = lifecycleViewModel()
+                val ui by vm.uiState.collectAsStateWithLifecycle()
                 BitmapToStitches(
                     reducedImageBitmap = img,
                     reducedHistogram = histo,
                     name = name,
-                    onEmbroidery = onEmbroideryUpdated
+                    onCreateEmbroidery = { n, b, h -> vm.createEmbroidery(n, b, h) },
+                    previewImage = ui.embroideryPreviewImage,
+                    creatingEmbroidery = ui.creatingEmbroidery,
                 )
             }
         }
