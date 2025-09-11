@@ -28,6 +28,25 @@ A patchable is simply a Composable function annotated with @Patch that ZePatch c
 
 See [examples](app/src/main/java/de/berlindroid/zepatch/patchable/Demo.kt)
 
+In its simplest form, a patchable looks like this:
+```kotlin
+@Patch("Hello World") // you need this to register it
+@Composable
+fun HelloWorld(
+    shouldCapture: Boolean = false, // used to activate the convert to bitmap
+    onBitmap: (ImageBitmap) -> Unit = {}, // used to return the bitmap from the SafeArea
+) {
+    // Safe Area is the part that becomes the patch
+    SafeArea(
+        shouldCapture = shouldCapture, // You need to pass this through from the parent or it won't work
+        onBitmap = onBitmap, // You need to pass this through from the parent or it won't work
+    ) {
+        Text("Hello World!", fontSize = 48.sp) // <- Your creative input goes here
+    }
+    // Add interactive pieces here. This will not be part of the patch
+}
+
+```
 
 ## First steps for attendees
 
