@@ -45,8 +45,8 @@ See [examples](app/src/main/java/de/berlindroid/zepatch/patchable/Demo.kt)
    - Event staff will provide a USB stick, save your patch on the device.
    - Event staff will embroider your patch.
 
-[!TIP]
-Avoid tiny text and hairline strokes. Solid fills and thick lines stitch best.
+> [!TIP]
+> Avoid tiny text and hairline strokes. Solid fills and thick lines stitch best.
 
 
 ## Project overview
@@ -65,10 +65,8 @@ https://github.com/gdg-berlin-android/ZePatch/releases/latest
 
 ## Pick up an issue (great for attendees!)
 
-- Good first issues:  
-  https://github.com/gdg-berlin-android/ZePatch/issues?q=is%3Aissue%20is%3Aopen%20label%3A%22%F0%9F%A4%93%20Good%20First%20Issue%20%F0%9F%AB%B6%22
-- Droidcon-tagged issues:  
-  https://github.com/gdg-berlin-android/ZePatch/issues?q=is%3Aissue%20is%3Aopen%20label%3A%22%F0%9F%A6%BE%20droidcon%20%F0%9F%A4%96%22
+- [🤓 Good First Issue 🫶](https://github.com/gdg-berlin-android/ZePatch/issues?q=is%3Aissue%20is%3Aopen%20label%3A%22%F0%9F%A4%93%20Good%20First%20Issue%20%F0%9F%AB%B6%22) for something easy to start
+- [🦾 droidcon 🤖](https://github.com/gdg-berlin-android/ZePatch/issues?q=is%3Aissue%20is%3Aopen%20label%3A%22%F0%9F%A6%BE%20droidcon%20%F0%9F%A4%96%22) specific for droidcon
 
 If you’re unsure where to start, grab any "good first issue" or ping maintainers on the issue.
 
