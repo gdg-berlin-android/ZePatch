@@ -95,6 +95,26 @@ fun GoogleLogo(
 
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Patch("YubicoLogo")
+@Composable
+fun YubicoLogo(
+    shouldCapture: Boolean = false,
+    onBitmap: (ImageBitmap) -> Unit = {},
+) {
+    SafeArea(
+        shouldCapture = shouldCapture,
+        onBitmap = onBitmap,
+    ) {
+        Image(
+            modifier = Modifier.size(200.dp),
+            painter = painterResource(R.drawable.yubico),
+            contentDescription = null
+        )
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Patch("Android")
 @Composable
 fun AndroidLogo(

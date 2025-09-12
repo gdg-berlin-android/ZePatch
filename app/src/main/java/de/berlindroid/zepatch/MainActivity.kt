@@ -163,7 +163,7 @@ private fun PatchableList(
                 onClick = { onItemClicked(name) },
             ) {
                 Column(
-                    modifier = Modifier.padding(8.dp),
+                    modifier = Modifier.padding(8.dp)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -176,7 +176,12 @@ private fun PatchableList(
                         )
                     }
                     Box(Modifier.height(4.dp))
-                    PatchableBoundingBox(patchable = patchable)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        PatchableBoundingBox(patchable = patchable)
+                    }
                 }
             }
         }

@@ -202,7 +202,7 @@ private fun Bitmap.getColorStrands(
     heightMm: Float,
     densityX: Float,
     densityY: Float,
-    maxStitchDistance: Float = XY(densityX, densityY).length * 3f
+    maxStitchDistance: Float = XY(densityX, densityY).length * 2f
 ): Map<Int, List<List<XY>>> {
     val resultMap: MutableMap<Int, MutableList<MutableList<XY>>> =
         histogram.colors.associate { color ->

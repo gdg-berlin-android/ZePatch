@@ -90,14 +90,14 @@ fun PatchableToReducedBitmap(
             supportingText = {
                 if (!isValidColorCount(colorText)) {
                     Text(
-                        text = "Please enter a valid number (3 or more)",
+                        text = "Please enter a valid color count (between 1 and 7)",
                         color = androidx.compose.material3.MaterialTheme.colorScheme.error
                     )
                 }
             }
         )
 
-        Button(enabled = isValidColorCount(colorText) , onClick = computeReducedBitmap) { Text("Reduce") }
+        Button(enabled = isValidColorCount(colorText), onClick = computeReducedBitmap) { Text("Reduce") }
 
         reducedImage?.let {
             Image(
@@ -109,14 +109,8 @@ fun PatchableToReducedBitmap(
     }
 }
 
-fun isValidColorCount(colorCountText: String): Boolean  =
-    when {
-        colorCountText.isEmpty() -> false
-        colorCountText.toIntOrNull() == null -> false
-        colorCountText.toInt() < 3 -> false
-        else -> true
-    }
-
+fun isValidColorCount(colorCountText: String): Boolean =
+    (colorCountText.toIntOrNull() ?: -1) in 1..7
 
 
 @Preview(showBackground = true)

@@ -17,12 +17,8 @@ data class Histogram(
     val spread: Map<Color, Amount>
 )
 
-val Histogram.colors : Set<Color>
+val Histogram.colors: Set<Color>
     get() = spread.keys
-
-fun Histogram.hasAlpha(): Boolean = colors.firstOrNull {
-    it.alpha < 0xff
-} != null
 
 fun Bitmap.colorHistogram(): Histogram {
     // all colors
@@ -45,21 +41,29 @@ fun Bitmap.colorHistogram(): Histogram {
 }
 
 fun Bitmap.reduceColors(maxColorCounts: Int): Pair<Bitmap, Histogram> {
-    var histogram = colorHistogram().mergeSimilarColors().removeLowCounts()
-    val hasAlpha = histogram.hasAlpha()
-    val desiredColorCount = (if (hasAlpha) 1 else 0) + maxColorCounts
+    val minDistance = 25
+    var histogram =
+        colorHistogram()
+            .mergeSimilarColors(maxColorCounts, minDistance)
+            .removeLowCounts(maxColorCounts, minDistance)
 
     var maxTries = 3
-    while (histogram.colors.size > desiredColorCount && maxTries > 0) {
-        histogram = histogram.mergeSimilarColors().removeLowCounts()
+    while (histogram.colors.size > maxColorCounts && maxTries > 0) {
+        histogram = histogram
+            .mergeSimilarColors(maxColorCounts, minDistance)
+            .removeLowCounts(maxColorCounts, minDistance)
         maxTries--
     }
 
     maxTries = 3
     var currentDistance = 50
+
     // reduce more aggressively
-    while (histogram.colors.size > desiredColorCount && maxTries > 0) {
-        histogram = histogram.mergeSimilarColors(currentDistance).removeLowCounts()
+    while (histogram.colors.size > maxColorCounts && maxTries > 0) {
+        histogram = histogram
+            .mergeSimilarColors(maxColorCounts, currentDistance)
+            .removeLowCounts(maxColorCounts, currentDistance)
+
         currentDistance = (currentDistance * 1.25f).toInt()
         maxTries--
     } // todo if not reject and give up
@@ -69,7 +73,7 @@ fun Bitmap.reduceColors(maxColorCounts: Int): Pair<Bitmap, Histogram> {
             .spread
             .toList()
             .sortedByDescending { it.second }
-            .take(desiredColorCount)
+            .take(maxColorCounts)
             .toMap()
     )
 
@@ -86,7 +90,11 @@ fun Bitmap.reduceColors(maxColorCounts: Int): Pair<Bitmap, Histogram> {
     return result to histogram
 }
 
-fun Histogram.mergeSimilarColors(distance: Int = 25): Histogram {
+fun Histogram.mergeSimilarColors(maxColorCounts: Int, distance: Int): Histogram {
+    if (spread.size <= maxColorCounts) {
+        return this
+    }
+
     val result = mutableMapOf<Color, Amount>()
 
     for (e in spread) {
@@ -109,7 +117,11 @@ fun Histogram.mergeSimilarColors(distance: Int = 25): Histogram {
     return Histogram(result)
 }
 
-fun Histogram.removeLowCounts(threshold: Int = 25): Histogram {
+fun Histogram.removeLowCounts(maxColorCounts: Int, threshold: Int): Histogram {
+    if (spread.size <= maxColorCounts) {
+        return this
+    }
+
     val result = mutableMapOf<Color, Amount>()
     var removedCount = 0
 
@@ -143,27 +155,21 @@ private fun IntArray.filteredBy(targetPixels: List<Int>): IntArray {
 }
 
 private fun distance(a: Int, b: Int): Float {
-    val aA = a.alpha
+    val aR = a.red
+    val aG = a.green
+    val aB = a.blue
 
-    return if (aA < 0xff) {
-        0f
-    } else {
-        val aR = a.red
-        val aG = a.green
-        val aB = a.blue
+    val aLAB = DoubleArray(3)
+    RGBToLAB(aR, aG, aB, aLAB)
 
-        val aLAB = DoubleArray(3)
-        RGBToLAB(aR, aG, aB, aLAB)
+    val bR = b.red
+    val bG = b.green
+    val bB = b.blue
 
-        val bR = b.red
-        val bG = b.green
-        val bB = b.blue
+    val bLAB = DoubleArray(3)
+    RGBToLAB(bR, bG, bB, bLAB)
 
-        val bLAB = DoubleArray(3)
-        RGBToLAB(bR, bG, bB, bLAB)
-
-        ColorUtils.distanceEuclidean(aLAB, bLAB).toFloat()
-    }
+    return ColorUtils.distanceEuclidean(aLAB, bLAB).toFloat()
 }
 
 
