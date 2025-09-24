@@ -26,7 +26,7 @@ A patchable is simply a Composable function annotated with @Patch that ZePatch c
 - The build’s KSP processor discovers it and adds it to a registry.
 - The app can render it to a bitmap and the converter turns that into a stitch format (e.g., PES) for embroidery.
 
-See [examples](app/src/main/java/de/berlindroid/zepatch/patchable/Demo.kt)
+See [examples](app/src/main/java/de/berlindroid/zepatch/patchable)
 
 In its simplest form, a patchable looks like this:
 ```kotlin
