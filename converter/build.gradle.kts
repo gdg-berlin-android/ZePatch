@@ -32,7 +32,7 @@ kotlin {
 
 chaquopy {
     defaultConfig {
-        buildPython("C:\\Python313\\python.exe")
+        buildPython(System.getenv("ZEPATCH_PYTHON_PATH"))
 
         pip {
             install("pystitch==1.0.0")
