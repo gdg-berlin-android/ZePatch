@@ -273,6 +273,25 @@ fun Emoji2(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Patch("Android Gradle")
+@Composable
+fun AndroidGradleLogo(
+    shouldCapture: Boolean = false,
+    onBitmap: (ImageBitmap) -> Unit = {},
+) {
+    SafeArea(
+        shouldCapture = shouldCapture,
+        onBitmap = onBitmap,
+    ) {
+        Image(
+            modifier = Modifier.size(300.dp),
+            painter = painterResource(R.drawable.android_gradle_logo),
+            contentDescription = null
+        )
+    }
+}
+
 @Preview
 @Composable
 fun PreviewAndyA() {
@@ -313,5 +332,11 @@ fun ComposableSheepPatchable(
             modifier = Modifier.size(300.dp),
         )
     }
+}
+
+@Preview
+@Composable
+fun AndroidGradlePatchable() {
+    AndroidGradleLogo()
 }
 
