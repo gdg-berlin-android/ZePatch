@@ -49,7 +49,7 @@ fun HelloWorld(
 ```
 
 ## First steps for attendees
-
+0. Follow local setup to set Python local variable: [Local setup and building](Local setup and building)
 1. Get the code
    - Open in Android Studio (Narwhal+). Let Gradle sync.  
    - Or build from CLI: ./gradlew assembleDebug
@@ -111,7 +111,7 @@ If you see missing Python errors, set an environment variable ZEPATCH_PYTHON_PAT
 Example (macOS/Linux):
 
 ```bash
-export ZEPATCH_PYTHON_PATH=/usr/local/bin/python3
+export ZEPATCH_PYTHON_PATH=/usr/bin/python3
 ```
 
 

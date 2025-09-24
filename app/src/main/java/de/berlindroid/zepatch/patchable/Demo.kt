@@ -32,6 +32,9 @@ import androidx.compose.ui.unit.sp
 import de.berlindroid.zepatch.R
 import de.berlindroid.zepatch.annotations.Patch
 import de.berlindroid.zepatch.ui.SafeArea
+import dev.nstv.composablesheep.library.ComposableSheep
+import dev.nstv.composablesheep.library.model.Sheep
+import dev.nstv.composablesheep.library.util.SheepColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Patch("AppLogo")
@@ -67,6 +70,25 @@ fun BerlindroidLogo(
         Image(
             modifier = Modifier.size(200.dp),
             painter = painterResource(R.drawable.voltron_nosign),
+            contentDescription = null
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Patch("FourOfThem")
+@Composable
+fun FourOfThemLogo(
+    shouldCapture: Boolean = false,
+    onBitmap: (ImageBitmap) -> Unit = {},
+) {
+    SafeArea(
+        shouldCapture = shouldCapture,
+        onBitmap = onBitmap,
+    ) {
+        Image(
+            modifier = Modifier.size(200.dp),
+            painter = painterResource(R.drawable.four_of_them),
             contentDescription = null
         )
     }
@@ -298,3 +320,40 @@ fun PreviewBerlindroid() {
 private fun BlueworldLogoPreview() {
     BlueworldLogo()
 }
+
+@Patch("Composable Sheep")
+@Composable
+fun ComposableSheepPatchable(
+    shouldCapture: Boolean = false, // used to activate the convert to bitmap
+    onBitmap: (ImageBitmap) -> Unit = {}, // used to return the bitmap from the SafeArea
+) {
+    SafeArea(
+        shouldCapture = shouldCapture,
+        onBitmap = onBitmap,
+    ) {
+        ComposableSheep(
+            sheep = Sheep(fluffColor = SheepColor.Green),
+            modifier = Modifier.size(300.dp),
+        )
+    }
+}
+
+@Preview
+@Patch("ZeWednesday")
+@Composable
+fun ZeWednesday(
+    shouldCapture: Boolean = false, // used to activate the convert to bitmap
+    onBitmap: (ImageBitmap) -> Unit = {}, // used to return the bitmap from the SafeArea
+) {
+    SafeArea(
+        shouldCapture = shouldCapture,
+        onBitmap = onBitmap,
+    ) {
+        Image(
+            modifier = Modifier.size(200.dp),
+            painter = painterResource(R.drawable.ze_frog),
+            contentDescription = null
+        )
+    }
+}
+

@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "de.berlindroid.zepatch"
-        minSdk = 24
+        minSdk = 25
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.androidx.adaptive.navigation)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.composableSheep)
 
     // Patch annotations + processor
     implementation(project(":patch-annotations"))
