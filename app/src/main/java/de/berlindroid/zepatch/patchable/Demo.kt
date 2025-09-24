@@ -251,6 +251,24 @@ fun Emoji2(
     }
 }
 
+@Patch("BlueworldLogo")
+@Composable
+fun BlueworldLogo(
+    shouldCapture: Boolean = false,
+    onBitmap: (ImageBitmap) -> Unit = {},
+) {
+    SafeArea(
+        shouldCapture = shouldCapture,
+        onBitmap = onBitmap,
+    ) {
+        Image(
+            modifier = Modifier.size(200.dp),
+            painter = painterResource(R.drawable.blueworld_logo),
+            contentDescription = "Blueworld Logo"
+        )
+    }
+}
+
 @Preview
 @Composable
 fun PreviewAndyA() {
@@ -273,4 +291,10 @@ fun PreviewFlex() {
 @Composable
 fun PreviewBerlindroid() {
     BerlindroidLogo()
+}
+
+@Preview
+@Composable
+private fun BlueworldLogoPreview() {
+    BlueworldLogo()
 }
