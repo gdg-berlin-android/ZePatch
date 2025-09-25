@@ -31,9 +31,3 @@ fun BerlindroidLogo(
         )
     }
 }
-
-@Preview
-@Composable
-fun PreviewBerlindroid() {
-    BerlindroidLogo()
-}
