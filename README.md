@@ -49,7 +49,7 @@ fun HelloWorld(
 ```
 
 ## First steps for attendees
-0. Follow local setup to set Python local variable: [Local setup and building](Local setup and building)
+0. Follow local setup to set Python local variable: [Local setup and building](#local-setup-and-building)
 1. Get the code
    - Open in Android Studio (Narwhal+). Let Gradle sync.  
    - Or build from CLI: ./gradlew assembleDebug
