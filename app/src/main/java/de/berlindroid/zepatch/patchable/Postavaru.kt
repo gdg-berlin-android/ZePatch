@@ -1,9 +1,11 @@
 package de.berlindroid.zepatch.patchable
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -67,7 +69,15 @@ fun Postavaru(
                 append("ru")
             }
         }
-        Box(modifier = Modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier.fillMaxWidth()
+                .border(
+                    1.dp,
+                    Color.White,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
             Image(
                 painter = painterResource(id = R.drawable.mountain_silhouette),
                 contentDescription = null,
