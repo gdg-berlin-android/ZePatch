@@ -331,12 +331,25 @@ class WizardViewModel(application: Application) : AndroidViewModel(application) 
                 val state = _uiState.value as EmbroiderBitmap
 
                 val aspect = state.reducedBitmap.width / state.reducedBitmap.height.toFloat()
+
+                val width: Float
+                val height: Float
+                if (aspect > 1f) {
+                    // Horizontal patch
+                    width = state.size
+                    height = width/aspect
+                } else {
+                    // Vertical
+                    height = state.size
+                    width = height * aspect
+                }
+
                 val embroidery = StitchToPES.createEmbroideryFromBitmap(
                     name = state.name,
                     bitmap = state.reducedBitmap.asAndroidBitmap(),
                     histogram = state.reducedHistogram,
-                    mmWidth = state.size * aspect,
-                    mmHeight = state.size,
+                    mmWidth = width,
+                    mmHeight = height,
                     mmDensityX = state.densityX,
                     mmDensityY = state.densityY,
                     satinBorderThickness = state.borderThickness,
