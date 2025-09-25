@@ -1,7 +1,11 @@
 package de.berlindroid.zepatch.patchable
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -90,12 +94,20 @@ fun AndroidDeveloperTipsLogo(
         shouldCapture = shouldCapture,
         onBitmap = onBitmap,
     ) {
-        Image(
-            modifier = Modifier.size(300.dp),
-            painter = painterResource(R.drawable.adt_logo),
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(Color.Green)
-        )
+        Box(
+            Modifier
+                .border(2.dp, Color.Black)
+                .size(300.dp)
+        ) {
+            Image(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                painter = painterResource(R.drawable.adt_logo),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(Color.Green)
+            )
+        }
     }
 }
 
