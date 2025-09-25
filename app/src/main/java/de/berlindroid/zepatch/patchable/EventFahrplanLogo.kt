@@ -34,6 +34,6 @@ fun EventFahrplanLogo(
 
 @Preview
 @Composable
-fun PreviewBerlindroid() {
+private fun PreviewEventFahrplanLogo() {
     EventFahrplanLogo()
 }
