@@ -34,6 +34,6 @@ fun BerlindroidLogo(
 
 @Preview
 @Composable
-fun PreviewBerlindroid() {
+private fun PreviewBerlindroid() {
     BerlindroidLogo()
 }
