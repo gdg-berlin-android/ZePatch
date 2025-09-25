@@ -22,6 +22,20 @@ fun Emoji(
     }
 }
 
+@Patch("SMILE")
+@Composable
+fun SmileEmoji(
+    shouldCapture: Boolean = false,
+    onBitmap: (ImageBitmap) -> Unit = {},
+) {
+    SafeArea(
+        shouldCapture = shouldCapture,
+        onBitmap = onBitmap,
+    ) {
+        Text("😃", fontSize = 180.sp)
+    }
+}
+
 @Patch("ROBOT")
 @Composable
 fun Emoji2(
