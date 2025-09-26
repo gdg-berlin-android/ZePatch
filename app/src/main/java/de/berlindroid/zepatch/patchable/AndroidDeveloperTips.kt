@@ -96,7 +96,7 @@ fun AndroidDeveloperTipsLogo(
     ) {
         Box(
             Modifier
-                .border(2.dp, Color.Black)
+                .border(12.dp, Color.Green)
                 .size(300.dp)
         ) {
             Image(
