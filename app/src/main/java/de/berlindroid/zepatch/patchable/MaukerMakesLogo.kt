@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -55,8 +56,46 @@ fun MaukerMakesLogo(
     }
 }
 
+@Patch("MaukerMakesInverted")
+@Composable
+fun MaukerMakesLogoInverted(
+    shouldCapture: Boolean = false,
+    onBitmap: (ImageBitmap) -> Unit = {},
+) {
+    SafeArea(
+        shouldCapture = shouldCapture,
+        onBitmap = onBitmap,
+    ) {
+        Box(
+            modifier = Modifier
+                .background(
+                    color = Color.Transparent,
+                    shape = RoundedCornerShape(100)
+                )
+                .border(
+                    BorderStroke(
+                        5.dp,
+                        Color.White
+                    ), RoundedCornerShape(100)
+                )
+
+        ) {
+            Image(
+                modifier = Modifier
+                    .size(200.dp)
+                    .padding(16.dp),
+                painter = painterResource(R.drawable.mauker_makes_logo_inverted ),
+                contentDescription = null
+            )
+        }
+    }
+}
+
 @Preview
 @Composable
 fun MaukerMakesLogoPreview() {
-    MaukerMakesLogo()
+    Column {
+        MaukerMakesLogo()
+        MaukerMakesLogoInverted()
+    }
 }
