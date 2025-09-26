@@ -22,6 +22,20 @@ fun Emoji(
     }
 }
 
+@Patch("italian hands")
+@Composable
+fun EmojiHand(
+    shouldCapture: Boolean = false,
+    onBitmap: (ImageBitmap) -> Unit = {},
+) {
+    SafeArea(
+        shouldCapture = shouldCapture,
+        onBitmap = onBitmap,
+    ) {
+        Text("\uD83E\uDD0C", fontSize = 180.sp)
+    }
+}
+
 @Patch("SMILE")
 @Composable
 fun SmileEmoji(
