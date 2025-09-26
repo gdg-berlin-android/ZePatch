@@ -60,6 +60,10 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.composableSheep)
+    implementation(libs.retro)
+    implementation(libs.retro.scalar)
+    implementation(libs.coil)
+    implementation(libs.coil.network)
 
     // Patch annotations + processor
     implementation(project(":patch-annotations"))
