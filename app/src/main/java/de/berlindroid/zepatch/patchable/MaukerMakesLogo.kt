@@ -33,7 +33,7 @@ fun MaukerMakesLogo(
         Box(
             modifier = Modifier
                 .background(
-                    color = Color.Transparent,
+                    color = Color(17, 0, 55),
                     shape = RoundedCornerShape(100)
                 )
                 .border(
