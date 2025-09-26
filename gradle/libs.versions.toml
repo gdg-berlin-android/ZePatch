@@ -19,6 +19,8 @@ appcompat = "1.7.1"
 material = "1.13.0"
 jts = "1.20.0"
 composableSheep = "1.1.0"
+retro = "3.0.0"
+coil = "3.3.0"
 
 [libraries]
 kotlinpoet = { group = "com.squareup", name = "kotlinpoet", version.ref = "kotlinpoet" }
@@ -49,6 +51,9 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 jts = { group = "org.locationtech.jts", name = "jts-core", version.ref = "jts" }
 composableSheep = { module = "dev.nstv:composablesheep", version.ref = "composableSheep" }
+retro = { module = "com.squareup.retrofit2:retrofit", version.ref = "retro" }
+retro-scalar = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "retro" }
+coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
