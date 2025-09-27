@@ -42,7 +42,7 @@ data class Mon(
 )
 
 interface PokeApi {
-    @GET("pokemon?limit=20&offset=0")
+    @GET("pokemon?limit=1400&offset=0")
     suspend fun mons(): Response<String>
 }
 

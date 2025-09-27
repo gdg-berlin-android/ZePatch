@@ -24,9 +24,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
-import coil3.ImageLoader
-import coil3.SingletonImageLoader
-import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import de.berlindroid.zepatch.ui.PatchableDetail
 import de.berlindroid.zepatch.ui.PatchableList
 import de.berlindroid.zepatch.ui.theme.ZePatchTheme
@@ -38,14 +35,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        SingletonImageLoader.setSafe { context ->
-            ImageLoader.Builder(context)
-                .components {
-                    add(OkHttpNetworkFetcherFactory())
-                }
-                .build()
-        }
-
         setContent {
             ZePatchTheme {
                 val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator()
@@ -106,4 +95,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-

@@ -35,15 +35,6 @@ chaquopy {
         val pythonPath = System.getenv("ZEPATCH_PYTHON_PATH")
         if (!pythonPath.isNullOrBlank()) {
             buildPython(pythonPath)
-        } else {
-            val osName = System.getProperty("os.name").lowercase()
-            val defaultPythonPath = when {
-                osName.contains("windows") -> "C:\\Python313\\python.exe"
-                osName.contains("mac") -> "/usr/local/bin/python3"
-                else -> "python3" // Linux or other Unix-like systems
-            }
-
-            buildPython(defaultPythonPath)
         }
 
         pip {
