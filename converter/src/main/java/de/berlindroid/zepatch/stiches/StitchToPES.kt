@@ -102,6 +102,7 @@ object StitchToPES {
         mmDensityY: Float,
         satinBorderThickness: Float,
         satinBorderDensity: Float,
+        satinBorderDilationRadius: Int,
     ): Embroidery {
         val strandsPerColor =
             bitmap.getColorStrands(
@@ -128,7 +129,7 @@ object StitchToPES {
                 distance = satinBorderDensity,
                 widthMm = mmWidth * 10,
                 heightMm = mmHeight * 10,
-                dilationRadius = 5,
+                dilationRadius = satinBorderDilationRadius,
             )
         } else {
             listOf()

@@ -128,6 +128,7 @@ class WizardViewModel(application: Application) : AndroidViewModel(application) 
             val densityY: Float = 0.4f,
             val borderThickness: Float = 2f,
             val borderDensity: Float = 0.5f,
+            val borderDilation: Int = 5,
 
             // satin border yes no
             // sizes
@@ -254,7 +255,8 @@ class WizardViewModel(application: Application) : AndroidViewModel(application) 
         densityY: Float,
         size: Float,
         borderThickness: Float,
-        borderDensity: Float
+        borderDensity: Float,
+        borderDilationRadius: Int,
     ) {
         _uiState.update {
             when (it) {
@@ -264,6 +266,7 @@ class WizardViewModel(application: Application) : AndroidViewModel(application) 
                     size = size,
                     borderThickness = borderThickness,
                     borderDensity = borderDensity,
+                    borderDilation = borderDilationRadius,
                 )
 
                 else -> it.copyWithError("Cannot update embroidery in state ${it.javaClass.simpleName}.")
@@ -354,6 +357,7 @@ class WizardViewModel(application: Application) : AndroidViewModel(application) 
                     mmDensityY = state.densityY,
                     satinBorderThickness = state.borderThickness,
                     satinBorderDensity = state.borderDensity,
+                    satinBorderDilationRadius = state.borderDilation,
                 )
 
                 val context = getApplication<Application>().applicationContext
