@@ -28,12 +28,19 @@ import de.berlindroid.zepatch.ui.PatchableDetail
 import de.berlindroid.zepatch.ui.PatchableList
 import de.berlindroid.zepatch.ui.theme.ZePatchTheme
 import kotlinx.coroutines.launch
+import org.opencv.android.OpenCVLoader
+import android.util.Log
 
 @ExperimentalMaterial3Api
 @ExperimentalMaterial3AdaptiveApi
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (!OpenCVLoader.initDebug()) {
+            Log.e("OpenCV", "Unable to load OpenCV!")
+        }
+
         enableEdgeToEdge()
         setContent {
             ZePatchTheme {

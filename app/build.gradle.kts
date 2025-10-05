@@ -69,6 +69,7 @@ dependencies {
     implementation(project(":patch-annotations"))
     implementation(project(":patch-processor"))
     ksp(project(":patch-processor"))
+    implementation(libs.opencv.android)
     implementation(project(":converter"))
 
     testImplementation(libs.junit)
