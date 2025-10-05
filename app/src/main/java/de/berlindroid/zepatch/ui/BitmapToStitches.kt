@@ -46,6 +46,7 @@ private const val MAX_BORDER = 150f
 
 private const val MIN_SIZE = 10
 private const val MAX_SIZE = 120
+private const val MIN_DILATION = 1
 
 @Composable
 fun BitmapToStitches(
@@ -57,6 +58,7 @@ fun BitmapToStitches(
         size: Float,
         borderThickness: Float,
         borderDensity: Float,
+        borderDilationRadius: Int,
     ) -> Unit,
     onCreateEmbroidery: () -> Unit,
 ) {
@@ -122,7 +124,8 @@ private fun ColumnScope.SuperSecretePirateControls(
         densityY: Float,
         size: Float,
         borderThickness: Float,
-        borderDensity: Float
+        borderDensity: Float,
+        borderDilationRadius: Int,
     ) -> Unit
 ) {
     Card(
@@ -161,6 +164,7 @@ private fun ColumnScope.SuperSecretePirateControls(
                         state.size,
                         state.borderThickness,
                         state.borderDensity,
+                        state.borderDilation,
                     )
                 },
                 onDone = {}
@@ -182,6 +186,7 @@ private fun ColumnScope.SuperSecretePirateControls(
                         state.size,
                         state.borderThickness,
                         state.borderDensity,
+                        state.borderDilation,
                     )
                 },
                 onDone = {}
@@ -203,6 +208,7 @@ private fun ColumnScope.SuperSecretePirateControls(
                         it.toFloat(),
                         state.borderThickness,
                         state.borderDensity,
+                        state.borderDilation,
                     )
                 },
                 onDone = {}
@@ -224,6 +230,7 @@ private fun ColumnScope.SuperSecretePirateControls(
                         state.size,
                         it,
                         state.borderDensity,
+                        state.borderDilation,
                     )
                 },
                 onDone = {}
@@ -245,6 +252,29 @@ private fun ColumnScope.SuperSecretePirateControls(
                         state.size,
                         state.borderThickness,
                         it,
+                        state.borderDilation,
+                    )
+                },
+                onDone = {}
+            )
+
+            IntSelector(
+                modifier = Modifier.fillMaxWidth(),
+                value = "${state.borderDilation}",
+                unit = "mm",
+                label = "satin border gap bridging radius",
+                errorText = { "Radius of $it not in $MIN_DILATION, $MAX_SIZE." },
+                acceptableNumberEntered = {
+                    (it.toIntOrNull() ?: MIN_DILATION) in (MIN_DILATION..MAX_SIZE)
+                },
+                onNumberChanged = {
+                    onUpdateEmbroidery(
+                        state.densityX,
+                        state.densityY,
+                        state.size,
+                        state.borderThickness,
+                        state.borderDensity,
+                        it,
                     )
                 },
                 onDone = {}
@@ -265,7 +295,7 @@ private fun Pirates() {
                 reducedBitmap = randomBitmap(100, 100).asImageBitmap(),
                 reducedHistogram = Histogram(emptyMap())
             ),
-            onUpdateEmbroidery = { _, _, _, _, _ -> }
+            onUpdateEmbroidery = { _, _, _, _, _, _ -> }
         )
     }
 }
@@ -284,7 +314,7 @@ private fun BitmapToStitchesPreview() {
             name = "MyPatch",
             currentlyEmbroidering = false,
         ),
-        onUpdateEmbroidery = { _, _, _, _, _ -> },
+        onUpdateEmbroidery = { _, _, _, _, _, _ -> },
         onCreateEmbroidery = {},
     )
 }

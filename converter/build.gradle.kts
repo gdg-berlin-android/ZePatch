@@ -50,4 +50,5 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.jts)
+    implementation(libs.opencv.android)
 }

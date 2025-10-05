@@ -14,7 +14,11 @@ import com.embroidermodder.punching.colors
 import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.geom.GeometryFactory
-import kotlin.collections.toMutableMap
+import org.opencv.android.Utils
+import org.opencv.core.Mat
+import org.opencv.core.MatOfPoint
+import org.opencv.core.Size
+import org.opencv.imgproc.Imgproc
 import kotlin.io.encoding.Base64
 import kotlin.math.floor
 import kotlin.math.sqrt
@@ -98,6 +102,7 @@ object StitchToPES {
         mmDensityY: Float,
         satinBorderThickness: Float,
         satinBorderDensity: Float,
+        satinBorderDilationRadius: Int,
     ): Embroidery {
         val strandsPerColor =
             bitmap.getColorStrands(
@@ -118,10 +123,13 @@ object StitchToPES {
         }.toTypedArray()
 
         val border = if (satinBorderThickness > 0.1f && satinBorderDensity > 0.05f) {
-            threads.satinBorder(
+            bitmap.satinBorder(
                 color = Color.BLACK,
                 thickness = satinBorderThickness,
                 distance = satinBorderDensity,
+                widthMm = mmWidth * 10,
+                heightMm = mmHeight * 10,
+                dilationRadius = satinBorderDilationRadius,
             )
         } else {
             listOf()
@@ -132,34 +140,68 @@ object StitchToPES {
         )
     }
 
-    private fun Array<Thread>.satinBorder(
+    private fun Bitmap.satinBorder(
         color: Int,
         thickness: Float,
-        distance: Float
+        distance: Float,
+        widthMm: Float,
+        heightMm: Float,
+        dilationRadius: Int,
     ): List<Thread> {
-        val factory = GeometryFactory()
-        val points = factory.createMultiPointFromCoords(
-            stitches.map { Coordinate(it.x.toDouble(), it.y.toDouble()) }.toTypedArray()
+        val mat = Mat()
+        val contours = mutableListOf<MatOfPoint>()
+
+        val scaleX = (widthMm / width).toDouble()
+        val scaleY = (heightMm / height).toDouble()
+        // Convert Bitmap to Mat and resize.
+        Utils.bitmapToMat(this, mat)
+        Imgproc.resize(
+            mat,
+            mat,
+            Size(0.0, 0.0),
+            scaleX,
+            scaleY,
+            Imgproc.INTER_NEAREST,
+        )
+        // Convert to grayscale and apply binary threshold,
+        // as for finding contours the image should be a white object on a black background.
+        Imgproc.cvtColor(mat, mat, Imgproc.COLOR_BGR2GRAY)
+        val thresh = Mat()
+        Imgproc.threshold(mat, thresh, 0.0, 255.0, Imgproc.THRESH_BINARY)
+
+        // MARK: morphological filters
+        val kernelDimension = (dilationRadius * 2 + 1).toDouble()
+        val kernelSize = Size(kernelDimension, kernelDimension)
+        val kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, kernelSize)
+
+        // Dilation to close small gaps.
+        Imgproc.dilate(thresh, thresh, kernel)
+        // Erosion shrinks back to original border positions and helps remove small noise.
+        Imgproc.erode(thresh, thresh, kernel)
+        // MARK: End morphological filters
+
+        val hierarchy = Mat() // Not used.
+        Imgproc.findContours(
+            thresh,
+            contours,
+            hierarchy,
+            Imgproc.RETR_EXTERNAL,  // Only outer contours
+            Imgproc.CHAIN_APPROX_TC89_L1 // Reduced details in output
         )
 
-        val hull = points.convexHull()
-        val outer = hull.buffer(thickness / 2.0)
-
-        return listOf(
-//            Thread(
-//                color = Color.WHITE,
-//                stitches = outer.toStitch(),
-//                absolute = true,
-//            ),
+        val outer = contours.asGeometries()
+        val threads = outer.map {
             Thread(
                 color = color,
-                stitches = outer.toZigZagStitch(
+                stitches = it.toZigZagStitch(
                     thickness * 10,
                     distance * 10
                 ),
                 absolute = true,
             )
-        )
+        }
+
+        return threads
     }
 }
 
@@ -316,6 +358,20 @@ private fun List<XY>.removeDoubles() = filterIndexed { index, xy ->
     }
 }
 
+private fun List<MatOfPoint>.asGeometries(): List<Geometry> {
+    val geometryFactory = GeometryFactory()
+    val polygons = this.mapNotNull { contour ->
+        val points = contour.toArray().map { Coordinate(it.x, it.y) }.toTypedArray()
+
+        if (points.size < 3) return@mapNotNull null
+
+        val closed = if (points.first() != points.last()) points + points.first() else points
+        val ring = geometryFactory.createLinearRing(closed)
+        geometryFactory.createPolygon(ring)
+    }
+
+    return polygons.toMutableList()
+}
 
 private val Float.floor: Int
     get() = floor(this).toInt()

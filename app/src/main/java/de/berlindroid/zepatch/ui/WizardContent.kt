@@ -34,6 +34,7 @@ fun WizardContent(
         size: Float,
         borderThickness: Float,
         borderDensity: Float,
+        borderDilationRadius: Int,
     ) -> Unit,
     onCreateEmbroidery: () -> Unit,
 ) {
@@ -93,7 +94,7 @@ private fun WizardContentPreview() {
         onBitmapUpdated = {},
         onColorCountUpdated = {},
         onComputeReducedBitmap = {},
-        onUpdateEmbroidery = { _, _, _, _, _ -> },
+        onUpdateEmbroidery = { _, _, _, _, _, _ -> },
         onCreateEmbroidery = {},
     )
 }
